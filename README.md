@@ -1,27 +1,36 @@
 # Engolindo Fuamaca
 
+Repo para organização dos dados para artigo.
+
 1. Crie usuário para acessar ao [Atmospheric Data Store (ADS)](https://ads.atmosphere.copernicus.eu/#!/home). 
 2. Identifique sua [chave](https://api.ecmwf.int/v1/key/).
-3. Instale o [pip install ecmwf-api-client](#pip-install-ecmwf-api-client)
+3. Instale o [cdsapi](#instalando-o-cdsapi)
+
 [Acesso aos dados publicos](https://confluence.ecmwf.int/display/WEBAPI/Access+ECMWF+Public+Datasets)
 
+## Criando ambiente de trabalho
+
 ```commandline
-mkdir EngolindoFumaca
-cd EngolindoFumaca
-git init
-touch README.md
+#mkdir EngolindoFumaca
+#cd EngolindoFumaca
+#git init
+#touch README.md
+git clone git@github.com:FelipeSBarros/EngolindoFumaca_paper.git
+cd EngolindoFumaca_paper
 python -m venv .venv
 ```
-# configurando acesso
+
+## configurando acesso
 
 1. Criar o arquivo `.cdsapirc` e adicionar os [dados de acesso](https://ads.atmosphere.copernicus.eu/api-how-to) a ele:
 2. [Mais infos aqui](https://confluence.ecmwf.int/display/WEBAPI/Access+ECMWF+Public+Datasets)
 
 ```commandline
 touch ~/.cdsapirc
+# colocar infos de chave no arquivo
 ```
 
-# instalando o cdsapi
+## instalando o cdsapi
 
 ```commandline
 pip install --upgrade pip
@@ -29,7 +38,9 @@ pip install cdsapi
 pip install python-dateutil
 ```
 
-# Usando cdsapi
+### Usando cdsapi
+
+Exemplo de requisição usando o `cdsapi`:
 
 ```commandline
 import cdsapi
