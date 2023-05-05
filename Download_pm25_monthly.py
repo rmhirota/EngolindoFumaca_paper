@@ -17,7 +17,7 @@ PARAMS = {
         "00:00",
         "12:00",
     ],
-    "area": [5.27, -73.99, -18.04, -44],
+    "area": [6.1599998802974305, -73.99, -18.04, -43.3899994411983982],
     "leadtime_hour": [
         "0",
         "12",
@@ -47,7 +47,7 @@ while dt < END_DATE:
         else:  # se não, sera 12:00, entao baixar step "0/3/6/9/12/15"
             params["leadtime_hour"] = [0, 3, 6, 9, 12, 15]
         file_name = Path(
-            f"{PATH}/cams_{params['date'].replace('/', '-')}_{params['time']}_{'-'.join(list(map(str, params['leadtime_hour'])))}_.netcdf_zip"
+            f"{PATH}/cams_{params['date'].replace('/', '-')}_{params['time']}_{'-'.join(list(map(str, params['leadtime_hour'])))}.netcdf_zip"
         )
         if file_name.exists():
             logging.warning(f"File {file_name} already exists. Skipping it.")
