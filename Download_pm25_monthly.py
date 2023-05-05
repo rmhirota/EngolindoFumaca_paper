@@ -7,7 +7,7 @@ from pathlib import Path
 import logging
 
 server = cdsapi.Client()
-
+PATH = Path('./Data/Raw/CAMS_NRT/')
 PARAMS = {
     "type": "forecast",
     "format": "netcdf_zip",
@@ -31,6 +31,10 @@ END_DATE = date(2022, 12, 31)
 times = ["00:00", "12:00"]
 dt = START_DATE
 dt_end = dt.replace(day=calendar.monthrange(dt.year, dt.month)[1])
+
+if not PATH.exists():
+    PATH.mkdir()
+
 while dt < END_DATE:
     params = PARAMS.copy()
     dt_end = dt.replace(day=calendar.monthrange(dt.year, dt.month)[1])
@@ -43,7 +47,7 @@ while dt < END_DATE:
         else:  # se não, sera 12:00, entao baixar step "0/3/6/9/12/15"
             params["leadtime_hour"] = [0, 3, 6, 9, 12, 15]
         file_name = Path(
-            f"./Data/Raw/CAMS_NRT/cams_{params['date'].replace('/', '-')}_{params['time']}_{'-'.join(list(map(str, params['leadtime_hour'])))}_.netcdf_zip"
+            f"{PATH}/cams_{params['date'].replace('/', '-')}_{params['time']}_{'-'.join(list(map(str, params['leadtime_hour'])))}_.netcdf_zip"
         )
         if file_name.exists():
             logging.warning(f"File {file_name} already exists. Skipping it.")
