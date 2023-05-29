@@ -4,6 +4,8 @@ import zipfile
 from datetime import datetime
 from pathlib import Path
 
+from dateutil.relativedelta import relativedelta
+
 start_date = datetime(2020, 1, 1).date()
 end_date = datetime(2022, 12, 31).date()
 dt = start_date
@@ -28,3 +30,5 @@ while dt < end_date:
             glob.glob(f"{intermediate_path}/data.nc")[0],
             f"{intermediate_path}/{dt}_{step}_{model_time}.nc",
         )
+
+    dt += relativedelta(months=1)
