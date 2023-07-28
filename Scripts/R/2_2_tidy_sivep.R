@@ -57,12 +57,7 @@ sivep <- sivep |>
     )
   )
 
-readr::write_rds(sivep, "Data/tidy/sivep.rds")
+readr::write_rds(sivep, "Data/tidy/sivep.rds", compress = "xz")
 
 sivep <- readr::read_rds("Data/tidy/sivep.rds")
 dplyr::glimpse(sivep)
-
-
-
-
-
