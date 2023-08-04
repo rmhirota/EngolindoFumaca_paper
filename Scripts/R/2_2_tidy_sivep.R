@@ -57,7 +57,24 @@ sivep <- sivep |>
     )
   )
 
+# inconsistências
+sivep <- sivep |>
+  dplyr::filter(dt_interna < "2023-01-01")
+
+# semana epidemiológica
+de_para_se <- seq(lubridate::ymd("2017-01-01"), lubridate::ymd("2022-12-31"), "7 days") |>
+  tibble::as_tibble_col("inicio") |>
+  dplyr::mutate(semana_epi = dplyr::row_number()) |>
+  tidyr::complete(
+    inicio = tidyr::full_seq(inicio, 1)
+  ) |>
+  tidyr::fill(semana_epi)
+
+sivep <- sivep |>
+  dplyr::left_join(de_para_se, c("dt_interna" = "inicio"))
+
+
 readr::write_rds(sivep, "Data/tidy/sivep.rds", compress = "xz")
 
-sivep <- readr::read_rds("Data/tidy/sivep.rds")
-dplyr::glimpse(sivep)
+# sivep <- readr::read_rds("Data/tidy/sivep.rds")
+# dplyr::glimpse(sivep)
