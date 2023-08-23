@@ -49,8 +49,9 @@ sivep <- sivep |>
     obito = ifelse(evolucao == 2 & !is.na(evolucao), TRUE, FALSE),
     obito_covid = obito & apenas_covid
   ) |>
+  # arrumar srag
   tidyr::complete(
-    code_muni, dt_exposicao = tidyr::full_seq(dt_exposicao, 1),
+    co_mun_res, dt_exposicao = tidyr::full_seq(dt_exposicao, 1),
     fill = list(
       srag = 0, covid = 0, covid_indef = 0, covid_sintomas = 0,
       obito = 0, obito_covid = 0
@@ -62,13 +63,21 @@ sivep <- sivep |>
   dplyr::filter(dt_interna < "2023-01-01")
 
 # semana epidemiológica
-de_para_se <- seq(lubridate::ymd("2017-01-01"), lubridate::ymd("2022-12-31"), "7 days") |>
+de_para_se <- seq(lubridate::ymd("2017-01-01"), lubridate::ymd("2023-01-07"), "7 days") |>
   tibble::as_tibble_col("inicio") |>
   dplyr::mutate(semana_epi = dplyr::row_number()) |>
   tidyr::complete(
     inicio = tidyr::full_seq(inicio, 1)
   ) |>
-  tidyr::fill(semana_epi)
+  tidyr::fill(semana_epi) |>
+  dplyr::filter(inicio < "2023-01-01") |>
+  dplyr::mutate(
+    semana_epi_ano = c(
+      sort(rep(1:52, 7)), sort(rep(1:52, 7)), sort(rep(1:52, 7)),
+      sort(rep(1:53, 7)), sort(rep(1:52, 7)), sort(rep(1:52, 7))
+    )
+  )
+readr::write_rds(de_para_se, "Data/tidy/semana_epidemiologica.rds")
 
 sivep <- sivep |>
   dplyr::left_join(de_para_se, c("dt_interna" = "inicio"))
@@ -78,3 +87,4 @@ readr::write_rds(sivep, "Data/tidy/sivep.rds", compress = "xz")
 
 # sivep <- readr::read_rds("Data/tidy/sivep.rds")
 # dplyr::glimpse(sivep)
+

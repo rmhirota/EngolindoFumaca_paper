@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt" xml:lang="pt"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Engolindo Fumaça - atualização dos dados</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="3_2_modelo_files/libs/clipboard/clipboard.min.js"></script>
+<script src="3_2_modelo_files/libs/quarto-html/quarto.js"></script>
+<script src="3_2_modelo_files/libs/quarto-html/popper.min.js"></script>
+<script src="3_2_modelo_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="3_2_modelo_files/libs/quarto-html/anchor.min.js"></script>
+<link href="3_2_modelo_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="3_2_modelo_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="3_2_modelo_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="3_2_modelo_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="3_2_modelo_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Engolindo Fumaça - atualização dos dados</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="observações-sobre-o-modelo" class="level2">
+<h2 class="anchored" data-anchor-id="observações-sobre-o-modelo">Observações sobre o modelo</h2>
+<ul>
+<li>Unidade observacional: município</li>
+<li>Variável resposta: número de internações (por Covid / SRAG) por semana</li>
+<li>Variáveis explicativas:
+<ul>
+<li>pessoas vacinadas (% sobre UF)</li>
+<li>pm25 (testar média, mediana, máximo, dias na semana acima do limite recomendado)</li>
+<li>tamanho do município (por população)</li>
+<li>quantidade de leitos existentes (por município e mês)</li>
+<li>precipitação</li>
+<li>focos de queimada</li>
+<li>UF como variável de efeito aleatório (considerando que não há independência entre os municípios de uma mesma UF)</li>
+</ul></li>
+</ul>
+</section>
+<section id="escopo" class="level2">
+<h2 class="anchored" data-anchor-id="escopo">Escopo</h2>
+<ul>
+<li>Amazônia Legal</li>
+<li>2017 a 2023</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 5%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 5%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 4%">
+<col style="width: 5%">
+<col style="width: 0%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 3%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">co_mun_res</th>
+<th style="text-align: left;">sg_uf</th>
+<th style="text-align: left;">id_mn_resi</th>
+<th style="text-align: right;">semana_epi</th>
+<th style="text-align: right;">semana_epi_ano</th>
+<th style="text-align: right;">apenas_covid</th>
+<th style="text-align: right;">covid_sintomas</th>
+<th style="text-align: right;">srag</th>
+<th style="text-align: left;">name_muni</th>
+<th style="text-align: left;">code_state</th>
+<th style="text-align: left;">abbrev_state</th>
+<th style="text-align: right;">mean_ppm25</th>
+<th style="text-align: right;">median_ppm25</th>
+<th style="text-align: right;">max_ppm25</th>
+<th style="text-align: right;">dias_acima_25</th>
+<th style="text-align: right;">5-11 anos</th>
+<th style="text-align: right;">12-17 anos</th>
+<th style="text-align: right;">18-29 anos</th>
+<th style="text-align: right;">30-39 anos</th>
+<th style="text-align: right;">40-49 anos</th>
+<th style="text-align: right;">50-59 anos</th>
+<th style="text-align: right;">60-69 anos</th>
+<th style="text-align: right;">70-79 anos</th>
+<th style="text-align: right;">80-89 anos</th>
+<th style="text-align: right;">90+ anos</th>
+<th style="text-align: right;">total_vacinadas</th>
+<th style="text-align: left;">muni_nm</th>
+<th style="text-align: left;">uf</th>
+<th style="text-align: right;">idhm</th>
+<th style="text-align: right;">espvida</th>
+<th style="text-align: right;">rdpc</th>
+<th style="text-align: right;">gini</th>
+<th style="text-align: right;">pop</th>
+<th style="text-align: left;">porte</th>
+<th style="text-align: right;">pop_uf</th>
+<th style="text-align: right;">pct_vacinada</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">110001</td>
+<td style="text-align: left;">RO</td>
+<td style="text-align: left;">ALTA FLORESTA D’OESTE</td>
+<td style="text-align: right;">168</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">Alta Floresta D’oeste</td>
+<td style="text-align: left;">11</td>
+<td style="text-align: left;">RO</td>
+<td style="text-align: right;">11.433123</td>
+<td style="text-align: right;">11.323818</td>
+<td style="text-align: right;">17.33697</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">ALTA FLORESTA D’OESTE</td>
+<td style="text-align: left;">RO</td>
+<td style="text-align: right;">0.641</td>
+<td style="text-align: right;">70.75</td>
+<td style="text-align: right;">476.99</td>
+<td style="text-align: right;">0.58</td>
+<td style="text-align: right;">22429</td>
+<td style="text-align: left;">p</td>
+<td style="text-align: right;">1515023</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">110001</td>
+<td style="text-align: left;">RO</td>
+<td style="text-align: left;">ALTA FLORESTA D’OESTE</td>
+<td style="text-align: right;">177</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">Alta Floresta D’oeste</td>
+<td style="text-align: left;">11</td>
+<td style="text-align: left;">RO</td>
+<td style="text-align: right;">8.171955</td>
+<td style="text-align: right;">8.996928</td>
+<td style="text-align: right;">11.14333</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">ALTA FLORESTA D’OESTE</td>
+<td style="text-align: left;">RO</td>
+<td style="text-align: right;">0.641</td>
+<td style="text-align: right;">70.75</td>
+<td style="text-align: right;">476.99</td>
+<td style="text-align: right;">0.58</td>
+<td style="text-align: right;">22429</td>
+<td style="text-align: left;">p</td>
+<td style="text-align: right;">1515023</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">110001</td>
+<td style="text-align: left;">RO</td>
+<td style="text-align: left;">ALTA FLORESTA D’OESTE</td>
+<td style="text-align: right;">182</td>
+<td style="text-align: right;">26</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">Alta Floresta D’oeste</td>
+<td style="text-align: left;">11</td>
+<td style="text-align: left;">RO</td>
+<td style="text-align: right;">7.231334</td>
+<td style="text-align: right;">6.175623</td>
+<td style="text-align: right;">12.74430</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">ALTA FLORESTA D’OESTE</td>
+<td style="text-align: left;">RO</td>
+<td style="text-align: right;">0.641</td>
+<td style="text-align: right;">70.75</td>
+<td style="text-align: right;">476.99</td>
+<td style="text-align: right;">0.58</td>
+<td style="text-align: right;">22429</td>
+<td style="text-align: left;">p</td>
+<td style="text-align: right;">1515023</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">110001</td>
+<td style="text-align: left;">RO</td>
+<td style="text-align: left;">ALTA FLORESTA D’OESTE</td>
+<td style="text-align: right;">183</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">Alta Floresta D’oeste</td>
+<td style="text-align: left;">11</td>
+<td style="text-align: left;">RO</td>
+<td style="text-align: right;">10.973564</td>
+<td style="text-align: right;">11.009051</td>
+<td style="text-align: right;">16.53389</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">ALTA FLORESTA D’OESTE</td>
+<td style="text-align: left;">RO</td>
+<td style="text-align: right;">0.641</td>
+<td style="text-align: right;">70.75</td>
+<td style="text-align: right;">476.99</td>
+<td style="text-align: right;">0.58</td>
+<td style="text-align: right;">22429</td>
+<td style="text-align: left;">p</td>
+<td style="text-align: right;">1515023</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">110001</td>
+<td style="text-align: left;">RO</td>
+<td style="text-align: left;">ALTA FLORESTA D’OESTE</td>
+<td style="text-align: right;">185</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">Alta Floresta D’oeste</td>
+<td style="text-align: left;">11</td>
+<td style="text-align: left;">RO</td>
+<td style="text-align: right;">8.022077</td>
+<td style="text-align: right;">7.962907</td>
+<td style="text-align: right;">10.23276</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">ALTA FLORESTA D’OESTE</td>
+<td style="text-align: left;">RO</td>
+<td style="text-align: right;">0.641</td>
+<td style="text-align: right;">70.75</td>
+<td style="text-align: right;">476.99</td>
+<td style="text-align: right;">0.58</td>
+<td style="text-align: right;">22429</td>
+<td style="text-align: left;">p</td>
+<td style="text-align: right;">1515023</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">110001</td>
+<td style="text-align: left;">RO</td>
+<td style="text-align: left;">ALTA FLORESTA D’OESTE</td>
+<td style="text-align: right;">186</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">Alta Floresta D’oeste</td>
+<td style="text-align: left;">11</td>
+<td style="text-align: left;">RO</td>
+<td style="text-align: right;">6.224856</td>
+<td style="text-align: right;">6.434043</td>
+<td style="text-align: right;">11.35863</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">ALTA FLORESTA D’OESTE</td>
+<td style="text-align: left;">RO</td>
+<td style="text-align: right;">0.641</td>
+<td style="text-align: right;">70.75</td>
+<td style="text-align: right;">476.99</td>
+<td style="text-align: right;">0.58</td>
+<td style="text-align: right;">22429</td>
+<td style="text-align: left;">p</td>
+<td style="text-align: right;">1515023</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="distribuição-dos-dados" class="level2">
+<h2 class="anchored" data-anchor-id="distribuição-dos-dados">Distribuição dos dados</h2>
+<p>É importante ressaltar que a distribuição dos dados não é normal, uma suposição feita em modelos lineares mais simples. Alguns possíveis modelos são modelos de contagem como binomial negativa e Poisson, além de suas variantes com inflação de zeros, dada a dispersão esparsa dos dados e alta frequência de contagens nulas, como podemos verificar no histograma na <a href="#fig-distribuicao">Figura&nbsp;1</a>.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-distribuicao" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="3_2_modelo_files/figure-html/fig-distribuicao-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Figura&nbsp;1: Histograma das internações por SRAG (limitado no eixo x, x &lt; 100)</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="possíveis-análises" class="level2">
+<h2 class="anchored" data-anchor-id="possíveis-análises">Possíveis análises</h2>
+<ul>
+<li>Modelo de Séries Temporais</li>
+<li>Modelo de Sobrevivência semi-paramétrico</li>
+<li>Modelos mistos
+<ul>
+<li>Poisson</li>
+<li>ZIP (Zero Inflated Poisson)</li>
+<li>Binomial Negativa</li>
+<li>ZINB (Zero Inflated Negative Binomial)</li>
+</ul></li>
+</ul>
+<div class="cell">
+
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copiada");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copiada");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

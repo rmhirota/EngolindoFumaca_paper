@@ -1,0 +1,81 @@
+---
+title: "Engolindo Fumaça - atualização dos dados"
+format: 
+  html: default
+  pdf: default
+lang: pt
+execute: 
+  echo: false
+  warning: false
+---
+
+## Observações sobre o modelo
+
+- Unidade observacional: município
+- Variável resposta: número de internações (por Covid / SRAG) por semana
+- Variáveis explicativas:
+  - pessoas vacinadas (% sobre UF)
+  - pm25 (testar média, mediana, máximo, dias na semana acima do limite recomendado)
+  - tamanho do município (por população)
+  - quantidade de leitos existentes (por município e mês)
+  - precipitação
+  - focos de queimada
+  - UF como variável de efeito aleatório (considerando que não há independência entre os municípios de uma mesma UF)
+
+## Escopo
+
+- Amazônia Legal
+- 2017 a 2023
+
+```{r}
+#| label: dados
+base_modelo <- readr::read_rds("../Data/tidy/base_modelo.rds")
+base_modelo |>
+  head() |>
+  knitr::kable()
+```
+
+## Distribuição dos dados
+
+É importante ressaltar que a distribuição dos dados não é normal, uma suposição feita em modelos lineares mais simples. Alguns possíveis modelos são modelos de contagem como binomial negativa e Poisson, além de suas variantes com inflação de zeros, dada a dispersão esparsa dos dados e alta frequência de contagens nulas, como podemos verificar no histograma na @fig-distribuicao.
+
+```{r}
+#| label: fig-distribuicao
+#| fig-cap: Histograma das internações por SRAG (limitado no eixo x, x < 100)
+
+# fit da binomial negativa
+fit <- MASS::fitdistr(base_modelo$srag, "negative binomial", method = "SANN")
+
+base_modelo |>
+  ggplot2::ggplot(ggplot2::aes(x = srag)) +
+  ggplot2::geom_histogram() +
+  ggplot2::stat_function(fun = dnbinom, args = fit$estimate, color = "red") +
+  ggplot2::xlim(NA, 100)
+
+
+# fit_g <- fitdistrplus::fitdist(base_modelo$srag,'nbinom', start = list(mu = 7, size = 0.03)) 
+# plot(fit_g)
+
+# gf2 <- vcd::goodfit(base_modelo$srag, type="nbinomial", method = "MinChisq")
+# plot(gf2)
+```
+
+
+## Possíveis análises
+
+- Modelo de Séries Temporais
+- Modelo de Sobrevivência semi-paramétrico
+- Modelos mistos
+  - Poisson 
+  - ZIP (Zero Inflated Poisson)
+  - Binomial Negativa
+  - ZINB (Zero Inflated Negative Binomial)
+
+
+```{r}
+mod1 <- lme4::lmer(
+  srag ~ mean_ppm25 + porte + semana_epi + (1|abbrev_state) + (1|pct_vacinada),
+  data = base_modelo
+)
+```
+
