@@ -12,8 +12,17 @@ sivep_semana <- sivep |>
     srag = sum(srag), .groups = "drop"
   )
 
+# dados pnud
+pnud <- readr::read_rds("Data/tidy/populacao.rds")
+pop_uf <- readr::read_rds("Data/tidy/populacao_uf.rds")
+
 # dados vacina
 vac_semana <- readr::read_rds("Data/tidy/vacinacao_semanal.rds")
+
+# dados precipitação
+precip <- "Data/tidy/precip_long.rds" |>
+  readr::read_rds() |>
+  dplyr::select(-.geo)
 
 # cria base para modelo
 base_modelo <- sivep_semana |>
@@ -22,7 +31,6 @@ base_modelo <- sivep_semana |>
     pm25_semana, c("co_mun_res" = "code_muni", "semana_epi", "semana_epi_ano")
   ) |>
   dplyr::left_join(vac_semana, c("sg_uf" = "UF", "semana_epi", "semana_epi_ano")) |>
-  dplyr::select(-week) |>
   tidyr::replace_na(list(
     `5-11 anos` = 0,
     `12-17 anos` = 0,
@@ -49,11 +57,15 @@ base_modelo <- sivep_semana |>
         `90+ anos`
   )
 
+base_modelo |>
+  dplyr::count(is.na(week))
+
 base_modelo <- base_modelo |>
   dplyr::left_join(pnud, c("co_mun_res" = "code_muni")) |>
   dplyr::left_join(pop_uf, c("sg_uf" = "uf"))
 
 base_modelo <- base_modelo |>
   dplyr::mutate(pct_vacinada = total_vacinadas / pop_uf)
+
 
 readr::write_rds(base_modelo, "Data/tidy/base_modelo.rds")

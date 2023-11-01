@@ -16,11 +16,11 @@ execute:
 - Variáveis explicativas:
   - pessoas vacinadas (% sobre UF)
   - pm25 (testar média, mediana, máximo, dias na semana acima do limite recomendado)
-  - tamanho do município (por população)
   - quantidade de leitos existentes (por município e mês)
   - precipitação
   - focos de queimada
-  - UF como variável de efeito aleatório (considerando que não há independência entre os municípios de uma mesma UF)
+  - Efeitos aleatórios: UF e município
+  - Offset: tamanho do município (por população)
 
 ## Escopo
 
@@ -53,11 +53,9 @@ base_modelo |>
   ggplot2::xlim(NA, 100)
 
 
-# fit_g <- fitdistrplus::fitdist(base_modelo$srag,'nbinom', start = list(mu = 7, size = 0.03)) 
-# plot(fit_g)
+fit_g <- fitdistrplus::fitdist(base_modelo$srag,'nbinom', start = list(mu = 7, size = 0.03)) 
+plot(fit_g)
 
-# gf2 <- vcd::goodfit(base_modelo$srag, type="nbinomial", method = "MinChisq")
-# plot(gf2)
 ```
 
 
@@ -73,9 +71,19 @@ base_modelo |>
 
 
 ```{r}
-mod1 <- lme4::lmer(
-  srag ~ mean_ppm25 + porte + semana_epi + (1|abbrev_state) + (1|pct_vacinada),
+#| modelo hierárquico
+
+# mudança de escala na semana_epi e semana_epi_ano para interpretação
+base_modelo <- dplyr::mutate(
+  base_modelo, 
+  semana_epi_ano = semana_epi_ano - 1,
+  semana_epi = semana_epi - 1
+)
+mod1 <- lmerTest::lmer(
+  srag ~ dias_acima_25 + semana_epi_ano + offset(log(pop)) + pct_vacinada +
+  (1 | abbrev_state/co_mun_res),
   data = base_modelo
 )
+summary(mod1)
 ```
 
