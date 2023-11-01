@@ -9,4 +9,4 @@ precip_tidy <- precip |>
   dplyr::relocate(UF, code, name, .geo) |>
   tidyr::pivot_longer(5:40, names_to = "mes_ano", values_to = "precipitacao")
 
-readr::write_rds(precip_tidy, "Data/tidy/precip_long.rds")
+readr::write_rds(precip_tidy, "Data/tidy/precip_long.rds", compress = "xz")
