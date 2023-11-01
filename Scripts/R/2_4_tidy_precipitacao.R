@@ -7,6 +7,8 @@ dplyr::glimpse(precip)
 precip_tidy <- precip |>
   dplyr::select(-1) |>
   dplyr::relocate(UF, code, name, .geo) |>
-  tidyr::pivot_longer(5:40, names_to = "mes_ano", values_to = "precipitacao")
+  tidyr::pivot_longer(5:40, names_to = "mes_ano", values_to = "precipitacao") |>
+  dplyr::filter(!is.na(precipitacao))
+
 
 readr::write_rds(precip_tidy, "Data/tidy/precip_long.rds", compress = "xz")

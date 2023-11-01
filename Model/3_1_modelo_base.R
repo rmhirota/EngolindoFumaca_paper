@@ -5,7 +5,7 @@ pm25_semana <- readr::read_rds("Data/tidy/municipios_pm25_medias_semana.rds")
 sivep <- readr::read_rds("Data/tidy/sivep.rds")
 sivep_semana <- sivep |>
   dplyr::mutate(srag = TRUE) |>
-  dplyr::group_by(co_mun_res, sg_uf, id_mn_resi, semana_epi, semana_epi_ano) |>
+  dplyr::group_by(co_mun_res, sg_uf, id_mn_resi, semana_epi, semana_epi_ano, mes_ano) |>
   dplyr::summarise(
     apenas_covid = sum(apenas_covid),
     covid_sintomas = sum(covid_sintomas),
@@ -22,7 +22,8 @@ vac_semana <- readr::read_rds("Data/tidy/vacinacao_semanal.rds")
 # dados precipitação
 precip <- "Data/tidy/precip_long.rds" |>
   readr::read_rds() |>
-  dplyr::select(-.geo)
+  dplyr::select(-.geo) |>
+  dplyr::mutate(co_mun_res = stringr::str_sub(code, 1, 6))
 
 # de=para semana epidemiologica
 semana <- readr::read_rds("Data/tidy/semana_epidemiologica.rds")
@@ -58,16 +59,11 @@ base_modelo <- sivep_semana |>
         `70-79 anos` +
         `80-89 anos` +
         `90+ anos`
-  )
-
-base_modelo |>
-  dplyr::count(is.na(week))
-
-base_modelo <- base_modelo |>
+  ) |>
+  dplyr::filter(!is.na(week)) |>
   dplyr::left_join(pnud, c("co_mun_res" = "code_muni")) |>
-  dplyr::left_join(pop_uf, c("sg_uf" = "uf"))
-
-base_modelo <- base_modelo |>
+  dplyr::left_join(pop_uf, c("sg_uf" = "uf")) |>
+  dplyr::left_join(precip, c("co_mun_res", "mes_ano"))
   dplyr::mutate(pct_vacinada = total_vacinadas / pop_uf)
 
 

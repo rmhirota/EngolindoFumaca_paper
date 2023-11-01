@@ -43,7 +43,7 @@ vac_semana <- vac_semana |>
   dplyr::summarise(vacinados = sum(n), .groups = "drop") |>
   dplyr::inner_join(cod_idade, c("agegroup" = "codigo")) |>
   dplyr::select(-ag_10, -agegroup) |>
-  tidyr::pivot_wider(names_from = ag_child, values_from = vacinados)
+  tidyr::pivot_wider(names_from = ag_child, values_from = vacinados) |>
   dplyr::left_join(de_para_se, c("week" = "inicio"))
 
 readr::write_rds(vac_semana, "Data/tidy/vacinacao_semanal.rds")
