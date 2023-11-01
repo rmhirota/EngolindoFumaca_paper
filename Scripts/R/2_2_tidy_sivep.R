@@ -48,8 +48,17 @@ sivep <- sivep |>
     covid_sintomas = covid_sintomas & (pos_pcrout != 2 | is.na(pos_pcrout)),
     obito = ifelse(evolucao == 2 & !is.na(evolucao), TRUE, FALSE),
     obito_covid = obito & apenas_covid
-  ) |>
-  # arrumar srag
+  )
+
+rm(municipios)
+gc()
+
+# inconsistências
+sivep <- sivep |>
+  dplyr::filter(dt_interna < "2023-01-01")
+
+# arrumar srag
+sivep <- sivep |>
   tidyr::complete(
     co_mun_res, dt_exposicao = tidyr::full_seq(dt_exposicao, 1),
     fill = list(
@@ -57,10 +66,6 @@ sivep <- sivep |>
       obito = 0, obito_covid = 0
     )
   )
-
-# inconsistências
-sivep <- sivep |>
-  dplyr::filter(dt_interna < "2023-01-01")
 
 # semana epidemiológica
 de_para_se <- seq(lubridate::ymd("2017-01-01"), lubridate::ymd("2023-01-07"), "7 days") |>
@@ -80,11 +85,16 @@ de_para_se <- seq(lubridate::ymd("2017-01-01"), lubridate::ymd("2023-01-07"), "7
 readr::write_rds(de_para_se, "Data/tidy/semana_epidemiologica.rds")
 
 sivep <- sivep |>
-  dplyr::left_join(de_para_se, c("dt_interna" = "inicio"))
-
+  dplyr::left_join(de_para_se, c("dt_interna" = "inicio")) |>
+  # adiciona mes_ano para cruzar com precipitacao
+  dplyr::mutate(mes_ano = paste(
+    tolower(lubridate::month(dt_exposicao, TRUE, locale = "pt_BR")),
+    lubridate::year(dt_exposicao), "_"
+  ))
 
 readr::write_rds(sivep, "Data/tidy/sivep.rds", compress = "xz")
 
 # sivep <- readr::read_rds("Data/tidy/sivep.rds")
-# dplyr::glimpse(sivep)
+dplyr::glimpse(sivep)
+
 

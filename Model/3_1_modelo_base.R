@@ -24,6 +24,9 @@ precip <- "Data/tidy/precip_long.rds" |>
   readr::read_rds() |>
   dplyr::select(-.geo)
 
+# de=para semana epidemiologica
+semana <- readr::read_rds("Data/tidy/semana_epidemiologica.rds")
+
 # cria base para modelo
 base_modelo <- sivep_semana |>
   dplyr::mutate(co_mun_res = as.character(co_mun_res)) |>
