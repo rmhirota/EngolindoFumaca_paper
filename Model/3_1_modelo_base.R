@@ -63,7 +63,7 @@ base_modelo <- sivep_semana |>
   dplyr::filter(!is.na(week)) |>
   dplyr::left_join(pnud, c("co_mun_res" = "code_muni")) |>
   dplyr::left_join(pop_uf, c("sg_uf" = "uf")) |>
-  dplyr::left_join(precip, c("co_mun_res", "mes_ano"))
+  dplyr::left_join(precip, c("co_mun_res", "mes_ano")) |>
   dplyr::mutate(pct_vacinada = total_vacinadas / pop_uf)
 
 

@@ -1,8 +1,14 @@
+capitais <- c(
+  "120040", "160030", "130260", "510340", "150140",
+  "110020", "140010", "172100", "211130"
+)
+
 pnud <- abjData::pnud_min |>
   dplyr::filter(ano == "2010") |>
   dplyr::mutate(muni_id = stringr::str_sub(muni_id, 1, 6)) |>
   dplyr::transmute(
     code_muni = muni_id,
+    capital = ifelse(code_muni %in% capitais, TRUE, FALSE),
     muni_nm,
     uf = uf_sigla,
     idhm,

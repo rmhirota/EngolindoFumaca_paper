@@ -43,9 +43,6 @@ base_modelo |>
 #| label: fig-distribuicao
 #| fig-cap: Histograma das internações por SRAG (limitado no eixo x, x < 100)
 
-# fit da binomial negativa
-fit <- MASS::fitdistr(base_modelo$srag, "negative binomial", method = "SANN")
-
 base_modelo |>
   ggplot2::ggplot(ggplot2::aes(x = srag)) +
   ggplot2::geom_histogram() +
@@ -80,8 +77,8 @@ base_modelo <- dplyr::mutate(
   semana_epi = semana_epi - 1
 )
 mod1 <- lmerTest::lmer(
-  srag ~ dias_acima_25 + semana_epi_ano + offset(log(pop)) + pct_vacinada +
-  (1 | abbrev_state/co_mun_res),
+  srag ~ dias_acima_25 + semana_epi_ano + offset(log(pop)) + offset(pct_vacinada) +
+  precipitacao + (1 | abbrev_state/co_mun_res),
   data = base_modelo
 )
 summary(mod1)
